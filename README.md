@@ -199,6 +199,6 @@ With that a simple for loop can be used to display all the records in the table 
     </table>
 ```
 
-It would be amazing to know all your experiences with flask-dt. Projects accomplished, ideas regarding the package, improvement suggesstions, basically anything and everything.
+It would be amazing to know all your experiences with flask-dt. Projects accomplished, ideas regarding the package, improvement suggestions, basically anything and everything.
 
 Enjoy!

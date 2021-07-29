@@ -148,7 +148,7 @@ We can add sample data to the tables created
 
 We now run the python file named app in the terminal
 ```bash
-python app.py
+$ python app.py
     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 

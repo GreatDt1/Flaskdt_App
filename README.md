@@ -1,4 +1,4 @@
-# Welcome To Flask-dt
+# Welcome To Flask Dt
 
 Here we are going to build a simple flask application to utilise flask-dt
 

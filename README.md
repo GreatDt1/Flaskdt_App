@@ -9,10 +9,9 @@ $ pip install flask-dt
 ```
 
 Below are notable versions of packages flask-dt requires
-Mostly SQLAlchemy to be version 1.3.23
 ![notable versions](imgs/install_requires.PNG)
 
-Now onto the directories  
+Now onto the directories
 
 In the current project directory, the only sub-directory needed is the templates directory which will hold your template files just like any normal flask application would require.
 Make sure to have created it
@@ -45,7 +44,7 @@ from flask_dt import FlaskDt
 ```
 
 Create your flask application with basic configurations
-Using sqlite is an arbitrary choice for simplicity
+Using sqlite as the rdbms is an arbitrary choice for simplicity
 
 ```python
 app = Flask(__name__)
@@ -61,24 +60,12 @@ db = SQLAlchemy(app)
 You can now create a FlaskDt instance as below
 ```python
 
-dt = FlaskDt(app, db, "display.html", "tables")
+dt = FlaskDt(db)
 
 ```
 The FlaskDt instance needs the following arguments  
-- The flask application instance 
-    - In this case it has the name app
 - The SQLAlchemy database instance
     - In this case it has the name db
-- The template that will display any of the tables in your db
-    - Just one template. Make sure to add the extension
-- The route that will be needed to access any of the tables in your db
-    - In this case it has the name tables
-    - The full route has the format /`route_name`/tablename
-    - In this case the full route of a table named users will have the route
-        - /tables/users
-
-Feel free to give the route name a complex name, more like a password to your table  
-For simple access in this case we will have the route name as tables
 
 Create a simple table to see flask-dt in action!  
 Here we will use flask's ORM feature to define two tables
@@ -104,12 +91,29 @@ def home_page():
     return "Hello"
 ```
 
-Calling the display_table method of the FlaskDt instance
+Create a route to display the tables
 ```python
-dt.display_table()
-```
+@app.route('/tables/<string:tablename>')
+# @login_required
+@dt.display_table
+def table_page(**kwargs):
+    tablename = kwargs.get('tablename', None)
+    table_class = kwargs.get('table_class', None)
+    columns = kwargs.get('columns', None)
+    records = kwargs.get('records', None)
 
-This serves to handle the routes to any of the tables in your db  
+    if table_class:        
+        return render_template('display.html', columns=columns, records=records, tablename=tablename)
+
+    else:
+        return f'No such table {tablename} in the database. Try creating the table'
+```
+This serves to handle the routes to any of the tables in your db 
+
+- Note the @dt.display_table decorator for the route
+- Note the string variable named **tablename** in the route. The decorator will be looking for the given variable name on execution
+- Note the commented @login.required decorator indicating you can chain decorators with dt too
+
 A simple prompt will appear for an invalid table name  
 We will create the tables in the db shortly  
 
@@ -167,13 +171,15 @@ The second table should look like this
 
 
 ## Something to Note
-The route that handles displaying your table passes in the following variables to your template
+The dt decorator passes the following variables to your function
     - records
         - this is a list of all records in the db where each record is a dict
     - columns
         - this is a list of all columns in  the db
     - tablename
         - this is, ofcourse, the name of your table
+    - table_class
+        - this is the SQLAlchemy instance of your table
 
 With that a simple for loop can be used to display all the records in the table as below
 ```html
@@ -190,7 +196,7 @@ With that a simple for loop can be used to display all the records in the table 
                 {% for record in records %}
                 <tr>
                     {% for column in columns %}
-                    <td>{{record[column]}}</td>
+                    <td>{{record.column}}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

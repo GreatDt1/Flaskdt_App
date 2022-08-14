@@ -145,4 +145,7 @@ cython_debug/
 # customo folders
 stuff/
 
+# other info
+other_info/
+
 # End of https://www.toptal.com/developers/gitignore/api/python

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_dt import *
 
@@ -8,7 +8,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-dt = FlaskDt(app, db, "display.html", "tables")
+dt = FlaskDt(db)
 
 class Table1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +26,20 @@ class Table2(db.Model):
 def home_page():
     return "Hello"
 
-dt.display_table()
+@app.route('/tables/<string:tablename>')
+# @login_required
+@dt.display_table
+def table_page(**kwargs):
+    tablename = kwargs.get('tablename', None)
+    table_class = kwargs.get('table_class', None)
+    columns = kwargs.get('columns', None)
+    records = kwargs.get('records', None)
+
+    if table_class:        
+        return render_template('display.html', columns=columns, records=records, tablename=tablename)
+
+    else:
+        return f'No such table {tablename} in the database. Try creating the table'
 
 if __name__ == "__main__":
     app.run(debug=True)
